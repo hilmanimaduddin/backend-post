@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.ts",
+      "use": "@now/node"
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "api/index.ts" }
+  ],
+  "build": {
+    "env": {
+      "PRISMA_CLIENT_ENGINE_TYPE": "binary"
+    },
+    "scripts": {
+      "build": "prisma generate && tsc"
+    }
+  }
+}
