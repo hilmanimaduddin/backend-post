@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { error } from 'console';
-// import path from 'path';
 const path = require('path');
 
 const prisma = new PrismaClient();
@@ -157,20 +156,16 @@ export class PostService {
     userId: string,
     file: Express.Multer.File,
   ): Promise<void> {
-    // Pastikan pengguna yang mengunggah gambar adalah pemilik posting (sesuai kebijakan keamanan aplikasi Anda)
     const post = await prisma.post.findUnique({
       where: { id: postId },
     });
 
     if (!post || post.userId !== userId) {
-      // Handle jika posting tidak ditemukan atau pengguna tidak berhak
       throw new Error('Unauthorized to upload image to this post');
     }
 
-    // Implementasikan logika penyimpanan gambar ke dalam postingan (contoh: menyimpan path file di database)
-    // const imagePath = path.join(__dirname, `../../uploads/${file.filename}`);
     const imagePath = path.join(`${file.filename}`);
-    // Simpan path file gambar ke dalam postingan
+
     await prisma.post.update({
       where: { id: postId },
       data: {

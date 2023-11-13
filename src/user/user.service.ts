@@ -44,7 +44,6 @@ export class UserService {
 
     console.log(hashedPassword);
 
-    // Di sini, Anda dapat menggunakan Prisma atau metode lain untuk memperbarui kata sandi pengguna
     await prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },

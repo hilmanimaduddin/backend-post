@@ -11,9 +11,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { PostService } from './post.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PostService } from './post.service';
 
 @Controller('post')
 export class PostController {
@@ -102,7 +102,6 @@ export class PostController {
 
   @Get('user/:userId')
   async getPostsByUserId(@Req() req, @Param('userId') userId: string) {
-    const viewerUserId = req.user ? req.user.sub : null;
     const posts = await this.postService.getPostsByUserId(userId);
     return { posts };
   }
@@ -115,9 +114,8 @@ export class PostController {
     @Param('postId') postId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const userId = req.user.sub; // Menggunakan ID pengguna dari payload token
+    const userId = req.user.sub;
 
-    // Implementasikan logika pengunggahan gambar ke post dengan ID tertentu
     await this.postService.uploadImage(postId, userId, file);
 
     return { message: 'Image uploaded successfully' };

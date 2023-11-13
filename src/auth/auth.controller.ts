@@ -49,9 +49,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@Req() req, @UploadedFile() file: Express.Multer.File) {
-    const userId = req.user.sub; // Menggunakan ID pengguna dari payload token
-
-    // Implementasikan logika pengunggahan gambar ke profil pengguna
+    const userId = req.user.sub;
     await this.authService.uploadImage(userId, file);
 
     return { message: 'Image uploaded successfully' };

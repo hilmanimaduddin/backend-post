@@ -3,9 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
 import { LoginDto, RegisterDto } from '../../dto/auth.dto';
 const path = require('path');
-
 const bcrypt = require('bcrypt');
-
 const prisma = new PrismaClient();
 
 @Injectable()
@@ -96,10 +94,8 @@ export class AuthService {
   }
 
   async uploadImage(userId: string, file: Express.Multer.File): Promise<void> {
-    // Implementasikan logika penyimpanan gambar ke dalam profil pengguna (contoh: menyimpan path file di database)
-    // const imagePath = path.join(__dirname, `../../uploads/${file.filename}`);
     const imagePath = path.join(`${file.filename}`);
-    // Simpan path file gambar ke dalam profil pengguna
+
     await prisma.user.update({
       where: { id: userId },
       data: {

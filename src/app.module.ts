@@ -1,22 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserController } from './user/user.controller';
-import { AuthController } from './auth/auth.controller';
-import { PostController } from './post/post.controller';
-import { AuthModule } from './auth/auth.module';
-import { AuthService } from './auth/auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { UserService } from './user/user.service';
-import { JwtStrategy } from './user/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
-import { PostService } from './post/post.service';
-import { env } from 'process';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { ExpressAdapter } from '@nestjs/platform-express';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { env } from 'process';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/auth.service';
+import { PostController } from './post/post.controller';
+import { PostService } from './post/post.service';
+import { JwtStrategy } from './user/jwt.strategy';
+import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
@@ -29,7 +26,7 @@ import { join } from 'path';
     }),
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads', // Ganti dengan direktori penyimpanan yang sesuai
+        destination: './uploads',
         filename: (req, file, callback) => {
           const filename = `${Date.now()}-${file.originalname}`;
           callback(null, filename);

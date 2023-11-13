@@ -19,7 +19,7 @@ export class UserController {
   @Put()
   @UseGuards(AuthGuard('jwt'))
   async updateProfile(@Req() req, @Body() updatedData: any) {
-    const userId = req.user.sub; // Menggunakan ID pengguna dari payload token
+    const userId = req.user.sub;
 
     const updatedUser = await this.userService.updateUser(userId, updatedData);
 
@@ -31,7 +31,7 @@ export class UserController {
   async changePassword(@Req() req, @Body() data: string) {
     console.log(' aaaa', data);
 
-    const userId = req.user.sub; // Menggunakan ID pengguna dari payload token
+    const userId = req.user.sub;
 
     await this.userService.changePassword(userId, data);
 
