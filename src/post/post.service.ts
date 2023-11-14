@@ -53,6 +53,7 @@ export class PostService {
     const post = await prisma.post.findUnique({
       where: { id: postId },
     });
+    console.log('post', post);
 
     return post;
   }
@@ -67,9 +68,16 @@ export class PostService {
   }
 
   async deletePost(postId: string): Promise<void> {
-    await prisma.post.delete({
-      where: { id: postId },
-    });
+    console.log('here', postId);
+    try {
+      await prisma.post.delete({
+        where: {
+          id: postId,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getPostsByUserId(userId: string): Promise<any[]> {
@@ -120,18 +128,38 @@ export class PostService {
     userId: string,
     postId: string,
     likeStatus: boolean,
-  ): Promise<void> {
+  ): Promise<any> {
     const like = await prisma.like.findFirst({
       where: {
         user: { id: userId },
         post: { id: postId },
       },
     });
-    if (like?.liked === likeStatus) {
-      throw error('You have already liked this post');
-    }
 
-    if (like) {
+    console.log('like ;;', like);
+    console.log('likeStatus', likeStatus);
+
+    if (!like) {
+      await prisma.like.create({
+        data: {
+          user: { connect: { id: userId } },
+          post: { connect: { id: postId } },
+          liked: likeStatus,
+        },
+      });
+      return {
+        message: 'Like created successfully',
+      };
+    } else if (like?.liked === likeStatus) {
+      const deletedLike = await prisma.like.delete({
+        where: {
+          id: like.id,
+        },
+      });
+      return {
+        message: 'Like deleted successfully',
+      };
+    } else if (like?.liked !== likeStatus) {
       await prisma.like.update({
         where: {
           id: like.id,
@@ -140,14 +168,9 @@ export class PostService {
           liked: likeStatus,
         },
       });
-    } else {
-      await prisma.like.create({
-        data: {
-          user: { connect: { id: userId } },
-          post: { connect: { id: postId } },
-          liked: likeStatus,
-        },
-      });
+      return {
+        message: 'Like updated successfully',
+      };
     }
   }
 

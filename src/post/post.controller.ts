@@ -69,7 +69,9 @@ export class PostController {
     if (!post) {
       return { message: 'Post not found' };
     }
-    await this.postService.deletePost(postId);
+    console.log(post);
+
+    await this.postService.deletePost(post.id);
     return { message: 'Post deleted successfully' };
   }
 
@@ -88,16 +90,16 @@ export class PostController {
   @UseGuards(AuthGuard('jwt'))
   async likePost(@Req() req, @Param('postId') postId: string) {
     const userId = req.user.sub;
-    await this.postService.toggleLike(userId, postId, true);
-    return { message: 'Post liked successfully' };
+    const res = await this.postService.toggleLike(userId, postId, true);
+    return res;
   }
 
   @Post('unlike/:postId')
   @UseGuards(AuthGuard('jwt'))
   async dislikePost(@Req() req, @Param('postId') postId: string) {
     const userId = req.user.sub;
-    await this.postService.toggleLike(userId, postId, false);
-    return { message: 'Post disliked successfully' };
+    const res = await this.postService.toggleLike(userId, postId, false);
+    return res;
   }
 
   @Get('user/:userId')
