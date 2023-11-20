@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import z from 'zod';
 
 export const CreateRegisterDto = z.object({
   name: z.string().max(10).min(5),
