@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { ChangePasswordType, UpdateUser, UpdateUserType } from 'zod/user.zod';
+import {
+  ChangePasswordType,
+  UpdateUser,
+  UpdateUserType,
+} from 'src/zod/user.zod';
 const bcrypt = require('bcrypt');
 
 const prisma = new PrismaClient();
