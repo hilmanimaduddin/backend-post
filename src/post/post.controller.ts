@@ -14,6 +14,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostService } from './post.service';
+import { CreatePostType } from 'zod/post.zod';
 
 @Controller('post')
 export class PostController {
@@ -21,26 +22,25 @@ export class PostController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async createPost(@Req() req, @Body() postData: any) {
+  async createPost(@Req() req, @Body() postData: CreatePostType) {
     const userId = req.user.sub;
     const createdPost = await this.postService.createPost(userId, postData);
-    return { message: 'Post created successfully', post: createdPost };
+    return createdPost;
   }
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
   async getAllPosts(@Req() req) {
     const allPosts = await this.postService.getAllPosts(req.query);
-    return { posts: allPosts };
+    return allPosts;
   }
 
   @Get('user')
   @UseGuards(AuthGuard('jwt'))
   async getPostByUser(@Req() req) {
     const userId = req.user.sub;
-
     const posts = await this.postService.getPostsByUser(userId, req.query);
-    return { posts };
+    return posts;
   }
 
   @Put(':id')
@@ -71,8 +71,8 @@ export class PostController {
     }
     console.log(post);
 
-    await this.postService.deletePost(post.id);
-    return { message: 'Post deleted successfully' };
+    const deletedPost = await this.postService.deletePost(post.id);
+    return deletedPost;
   }
 
   @Get(':id')
@@ -105,21 +105,21 @@ export class PostController {
   @Get('user/:userId')
   async getPostsByUserId(@Req() req, @Param('userId') userId: string) {
     const posts = await this.postService.getPostsByUserId(userId);
-    return { posts };
+    return posts;
   }
 
   @Post('upload/:postId')
   @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    @Req() req,
-    @Param('postId') postId: string,
     @UploadedFile() file: Express.Multer.File,
+    @Param('postId') postId: string,
+    @Req() req,
   ) {
-    const userId = req.user.sub;
+    console.log('file', file);
+    console.log('postId', postId);
 
-    await this.postService.uploadImage(postId, userId, file);
-
-    return { message: 'Image uploaded successfully' };
+    return this.postService.uploadImage(file, postId);
   }
 }

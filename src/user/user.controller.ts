@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Put, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ChangePasswordType, UpdateUserType } from 'zod/user.zod';
 
 @Controller('user')
 export class UserController {
@@ -10,31 +11,23 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   getProfile(@Req() req) {
     const userId = req.user.sub;
-    const user = this.userService.getUserById(userId);
-    console.log(req.user);
-
-    return user;
+    return this.userService.getUserById(userId);
   }
 
   @Put()
   @UseGuards(AuthGuard('jwt'))
-  async updateProfile(@Req() req, @Body() updatedData: any) {
+  async updateProfile(@Req() req, @Body() updatedData: UpdateUserType) {
     const userId = req.user.sub;
-
     const updatedUser = await this.userService.updateUser(userId, updatedData);
-
-    return { message: 'Profile updated successfully', user: updatedUser };
+    return updatedUser;
   }
 
   @Put('change-password')
   @UseGuards(AuthGuard('jwt'))
-  async changePassword(@Req() req, @Body() data: string) {
+  async changePassword(@Req() req, @Body() data: ChangePasswordType) {
     console.log(' aaaa', data);
-
     const userId = req.user.sub;
-
-    await this.userService.changePassword(userId, data);
-
-    return { message: 'Password changed successfully' };
+    const user = await this.userService.changePassword(userId, data);
+    return user;
   }
 }

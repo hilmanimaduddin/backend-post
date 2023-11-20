@@ -1,21 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
-import { LoginDto, RegisterDto } from '../../dto/auth.dto';
+import { v2 as cloudinary } from 'cloudinary';
+import {
+  CreateLoginDto,
+  CreateLoginDtoType,
+  CreateRegisterDto,
+  CreateRegisterDtoType,
+} from 'zod/auth.zod';
 const path = require('path');
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(private jwtService: JwtService) {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+  }
   private readonly blacklist: Set<string> = new Set();
+
   getHello(): string {
     return 'Hello World!';
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: CreateRegisterDtoType) {
     try {
+      CreateRegisterDto.parse(registerDto);
       const { name, username, email, password } = registerDto;
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -52,13 +66,14 @@ export class AuthService {
       return { message: 'Registrasi berhasil', data: post };
     } catch (error) {
       console.error('Error registering user:', error);
-      throw error;
+      return { error: 'Registrasi gagal', message: error };
     }
   }
 
-  async login(LoginDto: LoginDto) {
+  async login(LoginDto: CreateLoginDtoType) {
     const { email, password } = LoginDto;
     try {
+      CreateLoginDto.parse(LoginDto);
       const user = await prisma.user.findUnique({
         where: {
           email: email,
@@ -89,18 +104,52 @@ export class AuthService {
         access_token,
       };
     } catch (error) {
-      throw { error: 'Login failed', message: error };
+      return { error: 'Login failed', message: error };
     }
   }
 
-  async uploadImage(userId: string, file: Express.Multer.File): Promise<void> {
-    const imagePath = path.join(`${file.filename}`);
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        photo: imagePath,
-      },
+  async uploadImage(file: Express.Multer.File, userId: string) {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
+
+    try {
+      const result: any = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          },
+        );
+
+        uploadStream.end(file.buffer);
+      });
+
+      console.log('result', result);
+
+      if (result.secure_url) {
+        const post = await prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            photo: result.secure_url,
+          },
+        });
+        return post;
+      }
+
+      const imageUrl = result?.secure_url;
+
+      return imageUrl;
+    } catch (error) {
+      console.log('Error uploading image:', error);
+      return error;
+    }
   }
 }
