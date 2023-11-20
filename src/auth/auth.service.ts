@@ -7,7 +7,7 @@ import {
   CreateLoginDtoType,
   CreateRegisterDto,
   CreateRegisterDtoType,
-} from 'src/zod/auth.zod';
+} from '../zod/auth.zod';
 const path = require('path');
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
