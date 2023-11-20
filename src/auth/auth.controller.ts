@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateLoginDtoType, CreateRegisterDtoType } from 'src/zod/auth.zod';
+import { CreateLoginDtoType, CreateRegisterDtoType } from '../zod/auth.zod';
 import { AuthService } from './auth.service';
 
 @Controller('auth')

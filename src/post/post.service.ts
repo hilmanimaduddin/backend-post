@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { v2 as cloudinary } from 'cloudinary';
-import { CreatePostDto } from 'src/zod/post.zod';
+import { CreatePostDto } from '../zod/post.zod';
 const path = require('path');
 
 const prisma = new PrismaClient();

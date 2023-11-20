@@ -14,7 +14,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostService } from './post.service';
-import { CreatePostType } from 'src/zod/post.zod';
+import { CreatePostType } from '../zod/post.zod';
 
 @Controller('post')
 export class PostController {

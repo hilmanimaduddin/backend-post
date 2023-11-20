@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ChangePasswordType, UpdateUserType } from 'src/zod/user.zod';
+import { ChangePasswordType, UpdateUserType } from '../zod/user.zod';
 
 @Controller('user')
 export class UserController {

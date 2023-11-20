@@ -4,7 +4,7 @@ import {
   ChangePasswordType,
   UpdateUser,
   UpdateUserType,
-} from 'src/zod/user.zod';
+} from '../zod/user.zod';
 const bcrypt = require('bcrypt');
 
 const prisma = new PrismaClient();
